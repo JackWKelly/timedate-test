@@ -1,7 +1,7 @@
 var exports = module.exports = {};
 
-exports.hello =  function(req, res) {};
-
 exports.helloWorld = function(){
-    return "Hello world!";
+    return new Promise(function(resolve,reject){
+        resolve("Hello world!");
+    });
 }
