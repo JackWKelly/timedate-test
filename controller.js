@@ -14,6 +14,7 @@ exports.hello =  function(req, res) {
         })
 }
 
+//sends the time in 12 hour format 
 exports.getTime = function(req,res){
     var timeZone = req.query.zone.toString();
 
@@ -29,6 +30,10 @@ exports.getTime = function(req,res){
         })
 }
 
+/*
+sends the 12 hour time, date, how many days in the workweek until friday
+and a random fact that happened on that day
+*/
 exports.getFullReport = function(req,res){
     var timeZone = req.query.zone.toString();
 
@@ -36,6 +41,7 @@ exports.getFullReport = function(req,res){
 
     services.getTimeData(timeZone)
     .then(function(data){
+        //unsure if some of this should be moved into a service
         var dateTime = moment.parseZone(data.currentDateTime);
         var time = dateTime.format("H:mma");
         output = output.concat(`The time is: ${time}\n`);
@@ -53,14 +59,11 @@ exports.getFullReport = function(req,res){
 
     })
     .then(function(data){
+        //unsure if the logic for the selection should be here, or in the service as it is now
         output = output.concat(`Something that happened today many years ago: ${services.selectRandomFact(data)}\n`);
         console.log(output);
         res.send(output);
     })
-
-
-
-
 
     .catch(function(err){
         console.log(`PANIC ${err}`);
