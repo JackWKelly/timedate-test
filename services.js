@@ -52,21 +52,3 @@ exports.selectRandomFact = function(inputJson){
     var factText = `${category.substring(0, category.length - 1)} - ${inputJson['data'][category][fact]['text']}`;
     return factText;
 }
-
-//old
-/*exports.selectRandomFact = function(data){
-    
-    //console.log(data);
-    //gets the keys of the json categories
-    var categoryKeys = Object.keys(data.data);
-    //select what category key
-    var category = Math.floor(Math.random() * categoryKeys.length);
-    //gets the keys of the selected categories facts
-    var factKeys = Object.keys(data.data[category])
-    //what fact key
-    var fact = Math.floor(Math.random() * factKeys.length);
-    //get the fact
-    console.log(data.data[category[fact]]);
-    var factText = data.data[category[fact]].text;
-    return factText;
-}*/
