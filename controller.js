@@ -1,16 +1,18 @@
 const services = require('./services');
+const utils = require('./utils');
 const moment = require('moment');
 
 var exports = module.exports = {};
 
-exports.hello =  function(req, res) {
+exports.hello = function(req, res) {
     services.helloWorld()
         .then(function(data){
             res.send(`${data}`);
             console.log(`${data}`);
         })
         .catch(function(err){
-            res.send(`PANIC ${err}`);
+            res.status(500);
+            res.send(`PANIC: ${err}`);
         })
 }
 
@@ -21,12 +23,13 @@ exports.getTime = function(req,res){
     services.getTimeData(timeZone)
         .then(function(data){
             var dateTime = moment.parseZone(data.currentDateTime);
-            var time = dateTime.format("H:mma");
+            var time = utils.parseTime(dateTime);
             res.send(`${time}`);
             console.log(`${time}`);
         })
         .catch(function(err){
-            res.send(`PANIC ${err}`);
+            res.status(500);
+            res.send(`PANIC: ${err}`);
         })
 }
 
@@ -41,21 +44,24 @@ exports.getFullReport = function(req,res){
 
     services.getTimeData(timeZone)
     .then(function(data){
-        //unsure if some of this should be moved into a service
         var dateTime = moment.parseZone(data.currentDateTime);
-        var time = dateTime.format("H:mma");
+
+        var time = utils.parseTime(dateTime);
         output = output.concat(`The time is: ${time}\n`);
-        var date = dateTime.format("DD/MM/YYYY");
+
+        var date = utils.parseDate(dateTime);
         output = output.concat(`The date is: ${date}\n`);
-        if(dateTime.day() < 4){
-            output = output.concat(`You have ${5 - dateTime.day()} days to go until Friday!\n`);
+
+        const THURSDAY = 4;
+        const FRIDAY = 5
+        if(dateTime.day() < THURSDAY){
+            output = output.concat(`You have ${FRIDAY - dateTime.day()} days to go until Friday!\n`);
         }
-        else if(dateTime.day() == 4){
-            output = output.concat(`You have ${5 - dateTime.day()} day to go until Friday!\n`);
+        else if(dateTime.day() == THURSDAY){
+            output = output.concat(`You have ${FRIDAY - dateTime.day()} day to go until Friday!\n`);
         }
 
-        var apiDate = dateTime.format("M/D")
-        return services.getDateFacts(apiDate);
+        return services.getDateFacts(utils.parseHistoryApiDate(dateTime));
 
     })
     .then(function(data){
@@ -67,5 +73,7 @@ exports.getFullReport = function(req,res){
 
     .catch(function(err){
         console.log(`PANIC ${err}`);
+        res.status(500);
+        res.send(`PANIC: ${err}`);
     })
 }

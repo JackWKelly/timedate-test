@@ -9,7 +9,8 @@ app.use('/api/time', routes);
 
 //catch non valid routes
 app.get('*', function(req,res){
-    res.send("404");
+    res.status(404);
+    res.send('Did you mean /api/time?');
 });
 
 app.listen(port = 3000, function (){
